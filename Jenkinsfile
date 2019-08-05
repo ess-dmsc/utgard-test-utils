@@ -44,7 +44,7 @@ builders = pipelineBuilder.createBuilders { container ->
     container.sh """
       cd ${pipelineBuilder.project}
       virtualenv/bin/pytest --cov=utgardtests --cov-report=xml:coverage.xml
-      jenkins/replace-path-and-name-in-coverage.sh "/home/jenkins/${pipelineBuilder.project}" "${path}/${pipelineBuilder.project}/source/utgardtests" utgardtests coverage.xml
+      jenkins/replace-path-and-name-in-coverage.sh "/home/jenkins/${pipelineBuilder.project}" "${path}/${pipelineBuilder.project}/src/utgardtests" utgardtests coverage.xml
     """
     container.copyFrom("${pipelineBuilder.project}/coverage.xml", "${pipelineBuilder.project}")
     dir(pipelineBuilder.project) {

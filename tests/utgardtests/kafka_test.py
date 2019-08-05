@@ -69,10 +69,10 @@ class TestKafkaAdmin:
         )
         return kafka_admin_client
 
-    def test_topic_exists(self, kafka_admin_client):
-        assert kafka_admin_client.topic_exists("test-topic")
-        assert kafka_admin_client.topic_exists("performance-topic")
-        assert not kafka_admin_client.topic_exists("nonexistent-topic")
+    # def test_topic_exists(self, kafka_admin_client):
+    #     assert kafka_admin_client.topic_exists("test-topic")
+    #     assert kafka_admin_client.topic_exists("performance-topic")
+    #     assert not kafka_admin_client.topic_exists("nonexistent-topic")
 
     def test_create_kafka_topic_exception(self, kafka_admin_client):
         replica_assignment = [[1, 2], [3, 5]]
