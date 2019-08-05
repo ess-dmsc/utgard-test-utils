@@ -23,4 +23,4 @@ To run the tests, install the development requirements by running
 
 The tests can then be run against the installed package with
 
-    pytest [--cov=src/versionit --cov-report=xml:<path>] [--junit-xml=<path>]
+    pytest [--cov --cov-report=xml:<path>] [--junit-xml=<path>]
