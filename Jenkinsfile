@@ -23,7 +23,8 @@ builders = pipelineBuilder.createBuilders { container ->
     container.sh """
       cd ${pipelineBuilder.project}
       python3.6 -m venv virtualenv
-      virtualenv/bin/pip install -r dev_requirements.txt
+      virtualenv/bin/pip install --upgrade pip
+      virtualenv/bin/pip install -r requirements-dev.txt
       virtualenv/bin/pip install .
     """
   }
