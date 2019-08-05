@@ -21,6 +21,7 @@ builders = pipelineBuilder.createBuilders { container ->
 
   pipelineBuilder.stage("${container.key}: Setup") {
     container.sh """
+      export LANG=en_US.UTF-8
       cd ${pipelineBuilder.project}
       python3.6 -m venv virtualenv
       virtualenv/bin/pip install --upgrade pip
@@ -41,7 +42,6 @@ builders = pipelineBuilder.createBuilders { container ->
   pipelineBuilder.stage("${container.key}: Coverage") {
     container.sh """
       cd ${pipelineBuilder.project}
-      virtualenv/bin/pip install .
       virtualenv/bin/pytest --cov=src/versionit --cov-report=xml:coverage.xml
       jenkins/replace-path-and-name-in-coverage.sh "/home/jenkins/${pipelineBuilder.project}" "versionit" coverage.xml
     """
