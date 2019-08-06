@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="utgardtests",
-    version="0.0.1",
+    version="0.1.0",
     author="Afonso Mukai",
     author_email="afonso.mukai@esss.se",
     description="Utilities for test automation at Utgård",
