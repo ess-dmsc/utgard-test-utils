@@ -37,9 +37,19 @@ class LibrdkafkaProducer(threading.Thread):
         self.start_time = None
         self.end_time = None
 
-        self.cmd = self.build_cmd()
+        self.cmd = self._build_cmd()
 
-    def build_cmd(self):
+    def run(self):
+        self.start_time = round(time.time())
+        self._add_to_log(
+            "{} running command: '{}'".format(self.name, self.cmd)
+        )
+        with fabric.Connection(self.server) as c:
+            self.result = c.run(self.cmd, hide=True, pty=True)
+        self._add_to_log("{} finished running command".format(self.name))
+        self.end_time = round(time.time())
+
+    def _build_cmd(self):
         cmd = "rm -f {} {}".format(
             os.path.join(self.output_path, "output"),
             os.path.join(self.output_path, "error"),
@@ -67,16 +77,6 @@ class LibrdkafkaProducer(threading.Thread):
         stderr_path = os.path.join(self.output_path, "error")
         cmd = cmd + " 1>{} 2>{}".format(stdout_path, stderr_path)
         return cmd
-
-    def run(self):
-        self.start_time = round(time.time())
-        self._add_to_log(
-            "{} running command: '{}'".format(self.name, self.cmd)
-        )
-        with fabric.Connection(self.server) as c:
-            self.result = c.run(self.cmd, hide=True, pty=True)
-        self._add_to_log("{} finished running command".format(self.name))
-        self.end_time = round(time.time())
 
     def _add_to_log(self, message):
         t = round(time.time())

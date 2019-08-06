@@ -1,7 +1,7 @@
 import queue
 import fabric
 import pytest
-import utgardtests.librdkafkaproducer as prod
+import utgardtests.librdkafkaproducer as librdkafkaproducer
 
 
 class TestProducerSimpleCommand:
@@ -15,7 +15,7 @@ class TestProducerSimpleCommand:
         )
 
         log = queue.Queue()
-        producer = prod.LibrdkafkaProducer(
+        producer = librdkafkaproducer.LibrdkafkaProducer(
             name="producer",
             server="localhost",
             log=log,
@@ -43,7 +43,7 @@ class TestProducerSimpleCommand:
 
     def test_run(self, producer):
         producer.start()
-        producer.join(10)
+        producer.join(1)
 
         assert producer.start_time is not None
         assert producer.end_time is not None
@@ -60,7 +60,7 @@ class TestProducerSimpleCommand:
 class TestProducerCompleteCommand:
     def test_command(self):
         log = queue.Queue()
-        producer = prod.LibrdkafkaProducer(
+        producer = librdkafkaproducer.LibrdkafkaProducer(
             name="producer",
             server="localhost",
             log=log,
@@ -86,7 +86,7 @@ class TestProducerMetricsAndErrors:
         pass
 
     def read_producer_output_stub(self, *args, **kwargs):
-        return prod._parse_producer_output(producer_output)
+        return librdkafkaproducer._parse_producer_output(producer_output)
 
     def read_producer_errors_stub(self, *args, **kwargs):
         return ["Error 1", "Error 2"]
@@ -97,15 +97,19 @@ class TestProducerMetricsAndErrors:
         )
 
         monkeypatch.setattr(
-            prod, "_read_producer_output", self.read_producer_output_stub
+            librdkafkaproducer,
+            "_read_producer_output",
+            self.read_producer_output_stub,
         )
 
         monkeypatch.setattr(
-            prod, "_read_producer_errors", self.read_producer_errors_stub
+            librdkafkaproducer,
+            "_read_producer_errors",
+            self.read_producer_errors_stub,
         )
 
         log = queue.Queue()
-        producer = prod.LibrdkafkaProducer(
+        producer = librdkafkaproducer.LibrdkafkaProducer(
             name="producer1",
             server="localhost",
             log=log,
@@ -113,16 +117,18 @@ class TestProducerMetricsAndErrors:
             topic="test-topic",
             msg_size=1000,
             msg_count=2000,
-            output_path="/tmp"
+            output_path="/tmp",
         )
 
-        metrics, errors = prod.get_producer_metrics_and_errors([producer])
+        metrics, errors = librdkafkaproducer.get_producer_metrics_and_errors(
+            [producer]
+        )
 
         assert "producer1" in metrics
-        assert metrics['producer1'].shape == (7, 11)
+        assert metrics["producer1"].shape == (7, 11)
 
         assert "producer1" in errors
-        assert len(errors['producer1']) == 2
+        assert len(errors["producer1"]) == 2
 
 
 producer_output = [
