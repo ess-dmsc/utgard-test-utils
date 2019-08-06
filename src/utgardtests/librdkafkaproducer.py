@@ -1,12 +1,18 @@
+"""Thread for running an rdkafka_performance producer from librdkafka 1.1.0."""
+
 import os
+import tempfile
 import threading
 import time
 import fabric
+import numpy
+import pandas
 
 
 class LibrdkafkaProducer(threading.Thread):
     def __init__(
         self,
+        name,
         server,
         log,
         bootstrap_servers,
@@ -16,7 +22,7 @@ class LibrdkafkaProducer(threading.Thread):
         output_path,
         **kwargs
     ):
-        super().__init__()
+        super().__init__(name=name)
         self.server = server
         self.log = log
         self.kwargs = kwargs
@@ -75,3 +81,73 @@ class LibrdkafkaProducer(threading.Thread):
     def _add_to_log(self, message):
         t = round(time.time())
         self.log.put("{}: {}".format(t, message))
+
+
+def get_producer_metrics_and_errors(producers):
+    """Get the results for a list of producers from remote servers."""
+    producer_metrics = {}
+    producer_errors = {}
+    for producer in producers:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            _copy_producer_files(producer.server, producer.output_path, tmpdir)
+            producer_metrics[producer.name] = _read_producer_output(
+                os.path.join(tmpdir, "output")
+            )
+            producer_errors[producer.name] = _read_producer_errors(
+                os.path.join(tmpdir, "error")
+            )
+
+    return producer_metrics, producer_errors
+
+
+def _copy_producer_files(server, remote_src, local_dst):
+    with fabric.Connection(server) as c:
+        c.get(
+            os.path.join(remote_src, "output"),
+            os.path.join(local_dst, "output"),
+        )
+        c.get(
+            os.path.join(remote_src, "error"), os.path.join(local_dst, "error")
+        )
+
+
+def _read_producer_output(path):
+    # _parse_producer_output would work with a file path, but we pass the file
+    # to simplify testing.
+    with open(path, "r") as f:
+        data_frame = _parse_producer_output(f)
+
+    return data_frame
+
+
+def _parse_producer_output(output):
+    data = numpy.genfromtxt(
+        output,
+        delimiter="|",
+        comments="%",
+        skip_header=2,
+        usecols=range(1, 12),
+        dtype=numpy.dtype(
+            [
+                ("time_ms", "u8"),
+                ("msgs", "u8"),
+                ("bytes", "u8"),
+                ("rtt", "u8"),
+                ("dr", "u8"),
+                ("dr_msgs_per_s", "u8"),
+                ("dr_MB_per_s", "f8"),
+                ("dr_err", "u8"),
+                ("tx_err", "u8"),
+                ("queue", "u8"),
+                ("offset", "u8"),
+            ]
+        ),
+    )
+    return pandas.DataFrame(data)
+
+
+def _read_producer_errors(path):
+    with open(path, "r") as f:
+        errors = f.readlines()
+
+    return errors
