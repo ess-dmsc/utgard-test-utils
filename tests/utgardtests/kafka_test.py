@@ -56,13 +56,13 @@ class KafkaAdminStub:
 
 
 class TestKafkaAdmin:
-    def get_mock_kafka_admin(self, *args, **kwargs):
+    def get_kafka_admin_stub(self, *args, **kwargs):
         return KafkaAdminStub()
 
     @pytest.fixture
     def kafka_admin_client(self, monkeypatch):
         monkeypatch.setattr(
-            confluent_kafka.admin, "AdminClient", self.get_mock_kafka_admin
+            confluent_kafka.admin, "AdminClient", self.get_kafka_admin_stub
         )
         kafka_admin_client = utgardtests.kafka.KafkaAdmin(
             "localhost:9092", queue.Queue()
