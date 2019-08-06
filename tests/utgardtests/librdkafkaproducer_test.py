@@ -34,12 +34,12 @@ class TestProducerSimpleCommand:
 
     def test_command(self, producer):
         assert len(producer.cmd) > 0
-        assert producer.cmd.find("-P ") > 0
-        assert producer.cmd.find("-b localhost:9092") > 0
-        assert producer.cmd.find("-t test-topic") > 0
-        assert producer.cmd.find("-s 1000") > 0
-        assert producer.cmd.find("-c 2000") > 0
-        assert producer.cmd.find("-u") > 0
+        assert producer.cmd.find("-P ") >= 0
+        assert producer.cmd.find("-b localhost:9092") >= 0
+        assert producer.cmd.find("-t test-topic") >= 0
+        assert producer.cmd.find("-s 1000") >= 0
+        assert producer.cmd.find("-c 2000") >= 0
+        assert producer.cmd.find("-u") >= 0
 
     def test_run(self, producer):
         producer.start()
