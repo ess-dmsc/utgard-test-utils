@@ -7,12 +7,12 @@ class CollectdMetricsResponseStub:
     status_code = 200
     text = (
         "["
-        '  {"target": "system.server1.collectd.metric.value3", "tags": {"name": "system.server1.collectd.metric.value3"}, "datapoints": [[0.05, 50], [0.05, 60], [0.05, 70], [0.05, 80]]},'
-        '  {"target": "system.server1.collectd.metric.value2", "tags": {"name": "system.server1.collectd.metric.value2"}, "datapoints": [[0.01, 50], [0.01, 60], [0.01, 70], [0.01, 80]]},'
-        '  {"target": "system.server1.collectd.metric.value1", "tags": {"name": "system.server1.collectd.metric.value1"}, "datapoints": [[0.0, 50], [0.0, 60], [0.0, 70], [0.0, 80]]},'
-        '  {"target": "system.server2.collectd.metric.value3", "tags": {"name": "system.server2.collectd.metric.value3"}, "datapoints": [[0.05, 50], [0.05, 60], [0.05, 70], [0.05, 80]]},'
-        '  {"target": "system.server2.collectd.metric.value2", "tags": {"name": "system.server2.collectd.metric.value2"}, "datapoints": [[0.01, 50], [0.01, 60], [0.01, 70], [0.01, 80]]},'
-        '  {"target": "system.server2.collectd.metric.value1", "tags": {"name": "system.server2.collectd.metric.value1"}, "datapoints": [[0.0, 50], [0.0, 60], [0.0, 70], [0.0, 80]]}'
+        '  {"target": "system.server1.collectd.metric.value3", "tags": {"name": "system.server1.collectd.metric.value3"}, "datapoints": [[0.05, 50], [0.05, 60], [0.05, 70], [0.05, 80]]},'  # noqa: E501
+        '  {"target": "system.server1.collectd.metric.value2", "tags": {"name": "system.server1.collectd.metric.value2"}, "datapoints": [[0.01, 50], [0.01, 60], [0.01, 70], [0.01, 80]]},'  # noqa: E501
+        '  {"target": "system.server1.collectd.metric.value1", "tags": {"name": "system.server1.collectd.metric.value1"}, "datapoints": [[0.0, 50], [0.0, 60], [0.0, 70], [0.0, 80]]},'      # noqa: E501
+        '  {"target": "system.server2.collectd.metric.value3", "tags": {"name": "system.server2.collectd.metric.value3"}, "datapoints": [[0.05, 50], [0.05, 60], [0.05, 70], [0.05, 80]]},'  # noqa: E501
+        '  {"target": "system.server2.collectd.metric.value2", "tags": {"name": "system.server2.collectd.metric.value2"}, "datapoints": [[0.01, 50], [0.01, 60], [0.01, 70], [0.01, 80]]},'  # noqa: E501
+        '  {"target": "system.server2.collectd.metric.value1", "tags": {"name": "system.server2.collectd.metric.value1"}, "datapoints": [[0.0, 50], [0.0, 60], [0.0, 70], [0.0, 80]]}'       # noqa: E501
         "]"
     )
 
@@ -21,12 +21,12 @@ class KafkaMetricsResponseStub:
     status_code = 200
     text = (
         "["
-        '  {"target": "kafka.server3.kafka.metric.value6", "tags": {"name": "kafka.server3.kafka.metric.value6"}, "datapoints": [[1, 100], [7, 110], [13, 120], [19, 130]]},'
-        '  {"target": "kafka.server3.kafka.metric.value5", "tags": {"name": "kafka.server3.kafka.metric.value5"}, "datapoints": [[2, 100], [8, 110], [14, 120], [20, 130]]},'
-        '  {"target": "kafka.server3.kafka.metric.value4", "tags": {"name": "kafka.server3.kafka.metric.value4"}, "datapoints": [[3, 100], [9, 110], [15, 120], [21, 130]]},'
-        '  {"target": "kafka.server4.kafka.metric.value6", "tags": {"name": "kafka.server4.kafka.metric.value6"}, "datapoints": [[4, 100], [10, 110], [16, 120], [22, 130]]},'
-        '  {"target": "kafka.server4.kafka.metric.value5", "tags": {"name": "kafka.server4.kafka.metric.value5"}, "datapoints": [[5, 100], [11, 110], [17, 120], [23, 130]]},'
-        '  {"target": "kafka.server4.kafka.metric.value4", "tags": {"name": "kafka.server4.kafka.metric.value4"}, "datapoints": [[6, 100], [12, 110], [18, 120], [24, 130]]}'
+        '  {"target": "kafka.server3.kafka.metric.value6", "tags": {"name": "kafka.server3.kafka.metric.value6"}, "datapoints": [[1, 100], [7, 110], [13, 120], [19, 130]]},'   # noqa: E501
+        '  {"target": "kafka.server3.kafka.metric.value5", "tags": {"name": "kafka.server3.kafka.metric.value5"}, "datapoints": [[2, 100], [8, 110], [14, 120], [20, 130]]},'   # noqa: E501
+        '  {"target": "kafka.server3.kafka.metric.value4", "tags": {"name": "kafka.server3.kafka.metric.value4"}, "datapoints": [[3, 100], [9, 110], [15, 120], [21, 130]]},'   # noqa: E501
+        '  {"target": "kafka.server4.kafka.metric.value6", "tags": {"name": "kafka.server4.kafka.metric.value6"}, "datapoints": [[4, 100], [10, 110], [16, 120], [22, 130]]},'  # noqa: E501
+        '  {"target": "kafka.server4.kafka.metric.value5", "tags": {"name": "kafka.server4.kafka.metric.value5"}, "datapoints": [[5, 100], [11, 110], [17, 120], [23, 130]]},'  # noqa: E501
+        '  {"target": "kafka.server4.kafka.metric.value4", "tags": {"name": "kafka.server4.kafka.metric.value4"}, "datapoints": [[6, 100], [12, 110], [18, 120], [24, 130]]}'   # noqa: E501
         "]"
     )
 
