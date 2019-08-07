@@ -5,9 +5,9 @@ Utilities for test automation at Utgård
 
 ## Installation
 
-Run
+To install the version defined by \<tag\> from GitHub, run
 
-    pip install .
+    pip install git+https://github.com/ess-dmsc/utgard-test-utils.git@<tag>
 
 
 ## Developing
