@@ -55,14 +55,9 @@ class LibrdkafkaProducer(threading.Thread):
             os.path.join(self.output_path, "error"),
         )
         cmd = cmd + " && mkdir -p {}".format(self.output_path)
-        cmd = (
-            cmd
-            + " && /opt/dm_group/librdkafka/librdkafka-1.1.0/examples/rdkafka_performance -P -b {} -t {} -s {} -c {} -u".format(
-                self.bootstrap_servers,
-                self.topic,
-                self.msg_size,
-                self.msg_count,
-            )
+        cmd = cmd + "&& /opt/dm_group/librdkafka/librdkafka-1.1.0/examples/"
+        cmd = cmd + "rdkafka_performance -P -b {} -t {} -s {} -c {} -u".format(
+            self.bootstrap_servers, self.topic, self.msg_size, self.msg_count
         )
         if "configs" in self.kwargs:
             for config in self.kwargs["configs"]:
