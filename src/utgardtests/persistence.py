@@ -45,8 +45,18 @@ def save_figures(path: str, figures: dict):
 
 
 def save_info(path: str, info: str):
+    if os.path.exists(path):
+        raise FileExistsError(
+            "Information file {} already exists".format(path)
+        )
     with open(path, "w") as f:
         f.write(info)
+
+
+def save_runs_table(path: str, runs: pandas.DataFrame):
+    if os.path.exists(path):
+        raise FileExistsError("Runs table file {} already exists".format(path))
+    runs.to_csv(path)
 
 
 def read_run(path: str) -> (queue.Queue, dict, dict):
