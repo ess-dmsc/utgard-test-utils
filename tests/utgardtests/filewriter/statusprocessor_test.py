@@ -1,36 +1,9 @@
 import pytest
-from utgardtests import filewriter
+from utgardtests.filewriter import statusprocessor
 
 
-class KafkaProducerStub:
-    def __init__(self, broker, topic):
-        pass
-
-    def produce(self, msg):
-        pass
-
-
-class TestFileWriterClient:
-    @pytest.fixture
-    def fw(self):
-        kafka_producer = KafkaProducerStub(None, None)
-        return filewriter.FileWriterClient(None, None, kafka_producer)
-
-    def test_not_running_after_construction(self, fw):
-        assert not fw.is_running()
-
-    def test_is_running_after_start(self, fw):
-        fw.start(None, None)
-        assert fw.is_running()
-
-    def test_not_running_after_stop(self, fw):
-        fw.start(None, None)
-        fw.stop()
-        assert not fw.is_running()
-
-
-class TestStatusProcessor:
-    filewriter_status_master_msg = {
+def get_filewriter_status_master_msg(kafka_timestamp):
+    payload = {
         "files": {
             "unit-test-1": {
                 "filename": "/var/opt/dm_group/kafka-to-nexus/data.nxs",
@@ -54,8 +27,37 @@ class TestStatusProcessor:
         "type": "filewriter_status_master",
     }
 
+    return kafka_timestamp, payload
+
+
+class TestIsFileWriterWriting:
+    def fake_time_fun(self):
+        return 11.0
+
+    @pytest.fixture
+    def sp(self):
+        return statusprocessor.StatusProcessor(
+            "filewriter-1", "unit-test-1", self.fake_time_fun
+        )
+
+    def test_status_processor_just_created(self, sp):
+        assert not sp.is_file_writer_writing()
+
+    def test_filewriter_is_writing(self, sp):
+        sp.process_msg(get_filewriter_status_master_msg(9.0))
+        assert sp.is_file_writer_writing()
+        sp.process_msg(get_filewriter_status_master_msg(10.0))
+        assert sp.is_file_writer_writing()
+
+    def test_filewriter_stopped_writing(self, sp):
+        sp.process_msg(get_filewriter_status_master_msg(0.0))
+        assert not sp.is_file_writer_writing()
+
+
+class TestMetrics:
     def get_stream_master_status_msg(self, timestamp, value):
-        return {
+        kafka_timestamp = 0
+        payload = {
             "job_id": "unit-test-1",
             "next_message_eta_ms": 2000,
             "stream_master": {
@@ -93,12 +95,11 @@ class TestStatusProcessor:
             "type": "stream_master_status",
         }
 
+        return kafka_timestamp, payload
+
     @pytest.fixture
     def sp(self):
-        return filewriter.StatusProcessor("filewriter-1", "unit-test-1")
-
-    def test_process_filewriter_status_master_msg(self, sp):
-        sp.process_msg(self.filewriter_status_master_msg)
+        return statusprocessor.StatusProcessor("filewriter-1", "unit-test-1")
 
     def test_process_stream_master_status_msg(self, sp):
         sp.process_msg(self.get_stream_master_status_msg(1, 100.0))
