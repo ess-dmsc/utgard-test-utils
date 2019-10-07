@@ -117,3 +117,26 @@ class TestMetrics:
         assert len(metrics["FAKE_counters"]) == 3
         assert metrics["FAKE_counters"].index[0] == 1
         assert metrics["FAKE_counters"].iloc[2] == 30
+
+
+class TestInvalidMessageWarning:
+    @pytest.fixture
+    def sp(self, mocker):
+        self.logger = mocker.Mock()
+        return statusprocessor.StatusProcessor(
+            "filewriter-1", "unit-test-1", logger=self.logger
+        )
+
+    def test_empty_message(self, sp):
+        sp.process_msg({})
+        assert self.logger.warning.called
+
+    def test_message_without_type(self, sp):
+        msg = {"files": {}, "service_id": "filewriter-1"}
+        sp.process_msg(msg)
+        assert self.logger.warning.called
+
+    def test_status_master_message_without_service_id(self, sp):
+        msg = {"files": {}, "type": "filewriter_status_master"}
+        sp.process_msg(msg)
+        assert self.logger.warning.called

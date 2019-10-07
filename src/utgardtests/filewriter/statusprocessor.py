@@ -1,3 +1,4 @@
+import logging
 import time
 import pandas
 
@@ -5,12 +6,19 @@ import pandas
 class StatusProcessor:
     LIVENESS_TIMEOUT_S = 10.0
 
-    def __init__(self, service_id, job_id, time_fun=time.time):
+    def __init__(
+        self,
+        service_id,
+        job_id,
+        time_fun=time.time,
+        logger=logging.getLogger(__name__),
+    ):
         self._service_id = service_id
         self._job_id = job_id
         self._time_fun = time_fun
         self._last_status_timestamp_s = None
         self._metrics = {}
+        self._logger = logger
 
     def is_file_writer_writing(self):
         """Get file writer writing status for instance's job_id.
@@ -47,9 +55,8 @@ class StatusProcessor:
                 self._process_filewriter_status_master_msg(msg)
             elif msg_type == "stream_master_status":
                 self._process_stream_master_status_msg(msg)
-        except KeyError:
-            print("Error")
-            # Log error.
+        except KeyError as e:
+            self._logger.warning("Key '{}' not found in message".format(e))
 
     def _process_filewriter_status_master_msg(self, msg):
         if msg[1]["service_id"] == self._service_id:
