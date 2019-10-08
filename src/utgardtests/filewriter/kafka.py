@@ -1,10 +1,9 @@
 import json
-import confluent_kafka
 
 
 class KafkaProducer:
-    def __init__(self, broker, topic):
-        self._config = {"bootstrap.servers": broker}
+    def __init__(self, producer, topic):
+        self._producer = producer
         self._topic = topic
 
     def produce(self, cmd):
@@ -13,17 +12,13 @@ class KafkaProducer:
         Keyword arguments:
         cmd -- a dict to be sent as JSON
         """
-        producer = confluent_kafka.Producer(self._config)
         cmd_json = bytes(json.dumps(cmd), "ascii")
-        producer(self._topic, cmd_json)
+        self._producer.produce(self._topic, cmd_json)
 
 
 class KafkaConsumer:
-    MAX_MESSAGES = 10
-
-    def __init__(self, broker, topic, group_id):
-        config = {"bootstrap.servers": broker, "group.id": group_id}
-        self._consumer = confluent_kafka.Consumer(config)
+    def __init__(self, kafka_consumer, topic):
+        self._consumer = kafka_consumer
         self._topic = topic
 
     def start(self):
@@ -43,7 +38,7 @@ class KafkaConsumer:
 
         Returns a (timestamp, payload) tuple.
         """
-        messages = self._consumer.consume(self.MAX_MESSAGES, timeout_s)
+        messages = self._consumer.consume(num_messages, timeout_s)
         timestamps_and_messages = []
         for m in messages:
             if m.error() is None:
