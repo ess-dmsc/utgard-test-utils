@@ -1,5 +1,14 @@
+import pytest
 import confluent_kafka
 from utgardtests.filewriter import kafka
+
+
+class TestCommandProducer:
+    def test_produce(self, mocker):
+        kafka_producer = mocker.Mock()
+        p = kafka.CommandProducer(kafka_producer, "test-topic")
+        p.produce({'key': 'value'})
+        assert kafka_producer.produce.called
 
 
 class KafkaMessageStub:
@@ -34,19 +43,22 @@ class KafkaConsumerStub:
         pass
 
 
-class TestKafkaConsumer:
-    def test_valid_messages(self):
-        c = kafka.KafkaConsumer(KafkaConsumerStub(), "test-topic")
-        c.start()
-        msgs = c.get_messages(5, 1)
-        c.stop()
+class TestStatusConsumer:
+    @pytest.fixture
+    def sc(self):
+        return kafka.StatusConsumer(KafkaConsumerStub(), "test-topic")
+
+    def test_valid_messages(self, sc):
+        sc.start()
+        msgs = sc.get_messages(5, 1)
+        sc.stop()
         assert len(msgs) == 5
         assert msgs[2] == [2, "2"]
 
-    def test_messages_with_error(self):
-        c = kafka.KafkaConsumer(KafkaConsumerStub(), "test-topic")
-        c.start()
-        msgs = c.get_messages(10, 1)
-        c.stop()
+    def test_messages_with_error(self, sc):
+        sc.start()
+        msgs = sc.get_messages(10, 1)
+        sc.stop()
         assert len(msgs) == 9
+        assert msgs[0] == [0, "0"]
         assert msgs[-1] == [9, "9"]

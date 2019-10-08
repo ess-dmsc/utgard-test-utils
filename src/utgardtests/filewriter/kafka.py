@@ -1,9 +1,9 @@
 import json
 
 
-class KafkaProducer:
-    def __init__(self, producer, topic):
-        self._producer = producer
+class CommandProducer:
+    def __init__(self, kafka_producer, topic):
+        self._producer = kafka_producer
         self._topic = topic
 
     def produce(self, cmd):
@@ -16,7 +16,7 @@ class KafkaProducer:
         self._producer.produce(self._topic, cmd_json)
 
 
-class KafkaConsumer:
+class StatusConsumer:
     def __init__(self, kafka_consumer, topic):
         self._consumer = kafka_consumer
         self._topic = topic
