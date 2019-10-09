@@ -1,24 +1,32 @@
 class FileWriterClient:
-    def __init__(self, service_id, job_id, kafka_producer, status_thread):
+    def __init__(self, service_id, job_id, cmd_producer, status_thread):
         self._service_id = service_id
         self._job_id = job_id
-        self._producer = kafka_producer
+        self._producer = cmd_producer
         self._status_thread = status_thread
 
-    def start(self, data_broker, nexus_structure):
+    def start(
+        self,
+        file_name,
+        data_broker,
+        nexus_structure,
+        start_time,
+        end_time=None,
+    ):
         cmd = {
             "cmd": "FileWriter_new",
             "job_id": self._job_id,
             "broker": data_broker,
-            "start_time": 0,
-            "end_time": 1,
+            "start_time": start_time,
             "service_id": self._service_id,
-            "file_attributes": {"file_name": "/tmp/file.nxs"},
+            "file_attributes": {"file_name": file_name},
             "nexus_structure": nexus_structure,
         }
+        if end_time is not None:
+            cmd["end_time"] = end_time
+
         self._producer.produce(cmd)
         self._status_thread.start()
-        # Block waiting for status monitoring thread running confirmation
 
     def stop(self, join_timeout_s=5):
         cmd = {
@@ -34,4 +42,4 @@ class FileWriterClient:
         return self._status_thread.get_metrics()
 
     def is_writing(self):
-        return self._status_thread.is_file_writer_writing()
+        return self._status_thread.is_file_writer_running()

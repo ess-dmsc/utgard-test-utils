@@ -1,3 +1,4 @@
 [run]
 omit =
+    src/utgardtests/filewriter/filewriter.py
     src/utgardtests/filewriter/statusthread.py
