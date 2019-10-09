@@ -1,0 +1,3 @@
+[run]
+omit =
+    src/utgardtests/filewriter/statusthread.py

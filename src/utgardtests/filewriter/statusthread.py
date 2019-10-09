@@ -1,18 +1,33 @@
+import logging
 import threading
+import time
 
 
 class StatusThread(threading.Thread):
-    def __init__(self, kafka_consumer):
+    SLEEP_TIME_S = 0.5
+
+    def __init__(
+        self, status_processor, logger=logging.getLogger(__name__)
+    ):
         super().__init__()
-        self._consumer = kafka_consumer
-        self._is_running = None
-        self._is_running_lock = threading.Lock()
+        self._status_processor = status_processor
+        self._logger = logger
+        self._stop_event = threading.Event()
 
     def is_file_writer_running(self):
-        with self._is_running_lock:
-            status = self._is_running
+        return self._status_processor.is_writing()
 
-        return status
+    def get_metrics(self):
+        return self._status_processor.get_metrics()
 
     def run(self):
-        pass
+        self._status_processor.start()
+        try:
+            while not self._stop_event.wait(0):
+                self._status_processor.update_status()
+                time.sleep(self.SLEEP_TIME_S)
+        finally:
+            self._status_processor.stop()
+
+    def stop(self):
+        self._stop_event.set()
