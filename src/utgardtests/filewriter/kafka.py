@@ -43,7 +43,8 @@ class StatusConsumer:
         for m in messages:
             if m.error() is None:
                 ts_type, ts = m.timestamp()
-                status = m.value()
+                value = m.value()
+                status = json.loads(value.decode('ascii'))
                 timestamps_and_messages.append([ts, status])
 
         return timestamps_and_messages

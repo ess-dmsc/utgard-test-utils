@@ -7,7 +7,7 @@ class TestCommandProducer:
     def test_produce(self, mocker):
         kafka_producer = mocker.Mock()
         p = kafka.CommandProducer(kafka_producer, "test-topic")
-        p.produce({'key': 'value'})
+        p.produce({"key": "value"})
         assert kafka_producer.produce.called
 
 
@@ -34,7 +34,12 @@ class KafkaConsumerStub:
         pass
 
     def consume(self, num_messages, timeout_s):
-        return [KafkaMessageStub(int(i), str(i)) for i in range(num_messages)]
+        r = []
+        for i in range(num_messages):
+            payload = b'{"value": ' + bytes(str(i).encode('ascii')) + b'}'
+            r.append(KafkaMessageStub(int(i), payload))
+
+        return r
 
     def unsubscribe(self):
         pass
@@ -53,12 +58,12 @@ class TestStatusConsumer:
         msgs = sc.get_messages(5, 1)
         sc.stop()
         assert len(msgs) == 5
-        assert msgs[2] == [2, "2"]
+        assert msgs[2] == [2, {'value': 2}]
 
     def test_messages_with_error(self, sc):
         sc.start()
         msgs = sc.get_messages(10, 1)
         sc.stop()
         assert len(msgs) == 9
-        assert msgs[0] == [0, "0"]
-        assert msgs[-1] == [9, "9"]
+        assert msgs[0] == [0, {'value': 0}]
+        assert msgs[-1] == [9, {'value': 9}]
